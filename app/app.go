@@ -21,4 +21,6 @@ func New() *App {
 
 func (a *App) initRoutes() {
 	a.Router.HandleFunc("/", a.IndexHandler()).Methods("GET")
+	a.Router.HandleFunc("/api/createDeck", a.CreateDeckHandler()).Methods("POST")
+
 }

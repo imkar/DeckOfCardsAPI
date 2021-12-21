@@ -1,6 +1,7 @@
 package database
 
 import (
+	"deckofcards/app/models"
 	"log"
 
 	"github.com/jmoiron/sqlx"
@@ -10,6 +11,7 @@ import (
 type PostDB interface {
 	Open() error
 	Close() error
+	CreateDeck(deck *models.Deck) error
 }
 
 type DB struct {
@@ -33,4 +35,13 @@ func (d *DB) Open() error {
 
 func (d *DB) Close() error {
 	return d.db.Close()
+}
+
+func (d *DB) CreateDeck(deck *models.Deck) error {
+	res, err := d.db.Exec(insertNewDeck)
+	if err != nil {
+		log.Fatal("Deck Could not be created")
+	}
+	res.LastInsertId()
+	return err
 }

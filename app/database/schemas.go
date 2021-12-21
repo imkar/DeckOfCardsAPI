@@ -3,10 +3,15 @@ package database
 const createSchema = `
 	CREATE TABLE IF NOT EXISTS decks
 	(
-		id SERIAL PRIMARY KEY,
-		deckId SERIAL,
-		belongsTo TEXT,
+		id SERIAL,
+		deckId VARCHAR(7) PRIMARY KEY,
+		shuffled BOOLEAN,
+		remaining INTEGER,
 		createdDate DATE,
-		sessionId TEXT
+		lastModifiedDate DATE
 	)
+`
+
+var insertNewDeck = `
+	INSERT INTO decks(deckId, shuffled, remaining, createdDate, lastModifiedDate) VALUES($1,$2,$3,$4,$5) RETURNING id
 `
