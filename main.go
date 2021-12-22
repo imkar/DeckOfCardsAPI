@@ -8,6 +8,10 @@ import (
 	"os"
 )
 
+// TO DO:
+// Write shell script for postgres db and start.
+// $ docker run --name deckofcardsapidb --env POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
+
 func main() {
 	app := app.New()
 	app.DB = &database.DB{}

@@ -11,7 +11,7 @@ import (
 type PostDB interface {
 	Open() error
 	Close() error
-	CreateDeck(deck *models.Deck) error
+	CreateDeck(deck *models.Deck) (int64, error)
 }
 
 type DB struct {
@@ -37,11 +37,17 @@ func (d *DB) Close() error {
 	return d.db.Close()
 }
 
-func (d *DB) CreateDeck(deck *models.Deck) error {
-	res, err := d.db.Exec(insertNewDeck)
+// Creates
+func (d *DB) CreateDeck(deck *models.Deck) (int64, error) {
+	lastId := 0
+	err := d.db.QueryRow(insertNewDeck,
+		deck.DeckId,
+		deck.Shuffled,
+		deck.Remaining,
+		deck.CreatedDate,
+		deck.LastModifiedDate).Scan(&lastId)
 	if err != nil {
 		log.Fatal("Deck Could not be created")
 	}
-	res.LastInsertId()
-	return err
+	return int64(lastId), err
 }

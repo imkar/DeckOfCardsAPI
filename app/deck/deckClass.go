@@ -15,6 +15,11 @@ type Card struct {
 	value string
 }
 
+var (
+	suits  = []string{"HEART", "SPADE", "CLUB", "DIAMOND"}
+	values = []string{"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"}
+)
+
 func GenerateDeckId() string {
 	rand.Seed(time.Now().UnixNano())
 
@@ -37,8 +42,6 @@ func generateCard(suit string, val string) Card {
 }
 
 func (d Deck) CreateNewDeck(deckId string) Deck {
-	suits := []string{"HEART", "SPADE", "CLUB", "DIAMOND"}
-	values := []string{"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"}
 	for i := 0; i < len(suits); i++ {
 		for j := 0; j < len(values); j++ {
 			d.deck = append(d.deck, generateCard(suits[i], values[j]))
@@ -52,4 +55,8 @@ func (d Deck) PrintDeck() {
 	for i := 0; i < len(d.deck); i++ {
 		log.Printf("SUIT: %v VALUE: %v", d.deck[i].suit, d.deck[i].value)
 	}
+}
+
+func (d Deck) GetLength() int {
+	return len(d.deck)
 }
