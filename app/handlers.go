@@ -3,19 +3,23 @@ package app
 import (
 	"deckofcards/app/deck"
 	"deckofcards/app/models"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 )
 
-//"deckofcards/deck"
-//"deckofcards/deck/deckClass"
 func (a *App) IndexHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Deck of Cards API listening . . .")
 	}
 }
+
+// TODO:
+// CreateDeckHandler -> Saves/Returns Empty DeckOfCards
+// Refactor
+// Tests
 
 func (a *App) CreateDeckHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +49,26 @@ func (a *App) CreateDeckHandler() http.HandlerFunc {
 		}
 		d.ID = lastId
 		// map to JSON and send resp.
+
+		dOfc := deckOfCards.GetDeck()
+		//fmt.Printf("%v", dOfc)
+
+		j, errr := json.Marshal(dOfc)
+		if errr != nil {
+			fmt.Printf("Error: %s", errr.Error())
+		}
+		fmt.Printf("%v", string(j))
+
+		cards := &models.Cards{
+			DeckId:      deckId,
+			DeckOfCards: string(j),
+		}
+
+		er := a.DB.CreateCards(cards)
+		if er != nil {
+			log.Fatal("Cards could not be created")
+		}
+
 		resp := mapDeckToJSON(d)
 		sendResponse(w, r, resp, http.StatusOK)
 

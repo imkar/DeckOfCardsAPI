@@ -18,10 +18,7 @@ type JsonDeck struct {
 	LastModifiedDate string `json:"lastModifiedDate"`
 }
 
-/*
 type Cards struct {
-	ID    int64  `db:"id"`
-	suits string `db:"suits"`
-	value uint8  `db:"value"`
+	DeckId      string `json:"deckId"`
+	DeckOfCards string `json:"deckOfCards"`
 }
-*/

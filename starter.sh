@@ -5,7 +5,7 @@
 
 # run postgres docker container 
 
-docker run --name deckofcardsapidb --env POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
+docker run --env POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
 
 # pgAdmin docker container
 

@@ -20,6 +20,10 @@ var (
 	values = []string{"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"}
 )
 
+func (d Deck) GetDeck() []Card {
+	return d.deck
+}
+
 func GenerateDeckId() string {
 	rand.Seed(time.Now().UnixNano())
 

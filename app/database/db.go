@@ -12,6 +12,7 @@ type PostDB interface {
 	Open() error
 	Close() error
 	CreateDeck(deck *models.Deck) (int64, error)
+	CreateCards(cards *models.Cards) error
 }
 
 type DB struct {
@@ -50,4 +51,13 @@ func (d *DB) CreateDeck(deck *models.Deck) (int64, error) {
 		log.Fatal("Deck Could not be created")
 	}
 	return int64(lastId), err
+}
+
+func (d *DB) CreateCards(cards *models.Cards) error {
+
+	_, err := d.db.Exec(insertCards, cards.DeckId, cards.DeckOfCards)
+	if err != nil {
+		log.Fatal("Cards could not be created")
+	}
+	return err
 }
