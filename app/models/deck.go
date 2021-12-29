@@ -1,5 +1,7 @@
 package models
 
+import "deckofcards/app/deck"
+
 type Deck struct {
 	ID               int64  `db:"id"`
 	DeckId           string `db:"deckId"`
@@ -16,4 +18,9 @@ type JsonDeck struct {
 	Remaining        uint8  `json:"remaining"`
 	CreatedDate      string `json:"createdDate"`
 	LastModifiedDate string `json:"lastModifiedDate"`
+}
+
+type Doc struct {
+	DeckId      string     `json:"deckId"`
+	DeckOfCards deck.Cards `json:"deckOfCards"`
 }

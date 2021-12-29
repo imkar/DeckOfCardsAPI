@@ -22,7 +22,7 @@ var (
 	values = []string{"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"}
 )
 
-func (d Deck) GetDeck() []Card {
+func (d Deck) GetDeck() Cards {
 	return d.DeckOfCards
 }
 

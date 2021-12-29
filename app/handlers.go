@@ -18,20 +18,22 @@ func (a *App) IndexHandler() http.HandlerFunc {
 
 // TODO:
 // CreateDeckHandler -> Saves/Returns Empty DeckOfCards :DONE
-// Refactor	:
+// Refactor	:DONE
 // Tests
+// if deckId exists, checks it (DeckID must be UNIQUE).
 
 // Route: "/api/createDeck"
 func (a *App) CreateDeckHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// Create New Deck.
+		// Initializes Deck type.
 		newDeck := new(deck.Deck)
 		// Generate new Deck's id.
 		deckId := deck.GenerateDeckId()
+		// Creates deck of cards.
 		deckOfCards := newDeck.CreateNewDeck(deckId)
 
-		// Create Deck model.
+		// Fill Deck model for DB.
 		d := &models.Deck{
 			ID:               0,
 			DeckId:           deckId,
@@ -51,9 +53,9 @@ func (a *App) CreateDeckHandler() http.HandlerFunc {
 		d.ID = lastId
 		// map to JSON and send resp.
 
-		dOfc := deckOfCards.GetDeck()
-		cards := &models.Cards{
-			DeckOfCards: dOfc,
+		cards := &models.Doc{
+			DeckId:      deckId,
+			DeckOfCards: deckOfCards.GetDeck(),
 		}
 
 		er := a.DB.CreateCards(cards)

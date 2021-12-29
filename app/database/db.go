@@ -14,13 +14,14 @@ type PostDB interface {
 	Open() error
 	Close() error
 	CreateDeck(deck *models.Deck) (int64, error)
-	CreateCards(cards *models.Cards) error
+	CreateCards(cards *models.Doc) error
 }
 
 type DB struct {
 	db *sqlx.DB
 }
 
+// Opens connection with DB.
 func (d *DB) Open() error {
 	pg, err := sqlx.Open("postgres", pgConnStr)
 	if err != nil {
@@ -36,11 +37,12 @@ func (d *DB) Open() error {
 	return nil
 }
 
+// Closes the connection with DB.
 func (d *DB) Close() error {
 	return d.db.Close()
 }
 
-// Creates
+// Inserts New Deck.
 func (d *DB) CreateDeck(deck *models.Deck) (int64, error) {
 	lastId := 0
 	err := d.db.QueryRow(insertNewDeck,
@@ -55,15 +57,12 @@ func (d *DB) CreateDeck(deck *models.Deck) (int64, error) {
 	return int64(lastId), err
 }
 
-func (d *DB) CreateCards(cards *models.Cards) error {
-
+// Inserts Cards with deckId as primary key.
+func (d *DB) CreateCards(cards *models.Doc) error {
 	j, errr := json.Marshal(cards.DeckOfCards)
 	if errr != nil {
 		fmt.Printf("Error: %s", errr.Error())
 	}
-
-	fmt.Printf("THIS IS J: %v\n", string(j))
-
 	_, err := d.db.Exec(insertCards, cards.DeckId, j)
 	if err != nil {
 		log.Fatal("Cards could not be created")
