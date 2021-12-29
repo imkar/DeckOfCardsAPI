@@ -2,6 +2,8 @@ package database
 
 import (
 	"deckofcards/app/models"
+	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/jmoiron/sqlx"
@@ -55,7 +57,14 @@ func (d *DB) CreateDeck(deck *models.Deck) (int64, error) {
 
 func (d *DB) CreateCards(cards *models.Cards) error {
 
-	_, err := d.db.Exec(insertCards, cards.DeckId, cards.DeckOfCards)
+	j, errr := json.Marshal(cards.DeckOfCards)
+	if errr != nil {
+		fmt.Printf("Error: %s", errr.Error())
+	}
+
+	fmt.Printf("THIS IS J: %v\n", string(j))
+
+	_, err := d.db.Exec(insertCards, cards.DeckId, j)
 	if err != nil {
 		log.Fatal("Cards could not be created")
 	}

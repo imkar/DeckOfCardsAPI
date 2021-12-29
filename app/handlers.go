@@ -3,13 +3,13 @@ package app
 import (
 	"deckofcards/app/deck"
 	"deckofcards/app/models"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 )
 
+// Route: "/"
 func (a *App) IndexHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Deck of Cards API listening . . .")
@@ -17,10 +17,11 @@ func (a *App) IndexHandler() http.HandlerFunc {
 }
 
 // TODO:
-// CreateDeckHandler -> Saves/Returns Empty DeckOfCards
-// Refactor
+// CreateDeckHandler -> Saves/Returns Empty DeckOfCards :DONE
+// Refactor	:
 // Tests
 
+// Route: "/api/createDeck"
 func (a *App) CreateDeckHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -51,17 +52,8 @@ func (a *App) CreateDeckHandler() http.HandlerFunc {
 		// map to JSON and send resp.
 
 		dOfc := deckOfCards.GetDeck()
-		//fmt.Printf("%v", dOfc)
-
-		j, errr := json.Marshal(dOfc)
-		if errr != nil {
-			fmt.Printf("Error: %s", errr.Error())
-		}
-		fmt.Printf("%v", string(j))
-
 		cards := &models.Cards{
-			DeckId:      deckId,
-			DeckOfCards: string(j),
+			DeckOfCards: dOfc,
 		}
 
 		er := a.DB.CreateCards(cards)
@@ -71,6 +63,5 @@ func (a *App) CreateDeckHandler() http.HandlerFunc {
 
 		resp := mapDeckToJSON(d)
 		sendResponse(w, r, resp, http.StatusOK)
-
 	}
 }

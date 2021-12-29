@@ -7,12 +7,14 @@ import (
 )
 
 type Deck struct {
-	deckId string
-	deck   []Card
+	DeckId      string
+	DeckOfCards Cards
 }
+
+type Cards []Card
 type Card struct {
-	suit  string
-	value string
+	Suit  string
+	Value string
 }
 
 var (
@@ -21,7 +23,7 @@ var (
 )
 
 func (d Deck) GetDeck() []Card {
-	return d.deck
+	return d.DeckOfCards
 }
 
 func GenerateDeckId() string {
@@ -40,27 +42,27 @@ func GenerateDeckId() string {
 
 func generateCard(suit string, val string) Card {
 	return Card{
-		suit:  suit,
-		value: val,
+		Suit:  suit,
+		Value: val,
 	}
 }
 
 func (d Deck) CreateNewDeck(deckId string) Deck {
 	for i := 0; i < len(suits); i++ {
 		for j := 0; j < len(values); j++ {
-			d.deck = append(d.deck, generateCard(suits[i], values[j]))
+			d.DeckOfCards = append(d.DeckOfCards, generateCard(suits[i], values[j]))
 		}
 	}
-	d.deckId = deckId
+	d.DeckId = deckId
 	return d
 }
 
 func (d Deck) PrintDeck() {
-	for i := 0; i < len(d.deck); i++ {
-		log.Printf("SUIT: %v VALUE: %v", d.deck[i].suit, d.deck[i].value)
+	for i := 0; i < len(d.DeckOfCards); i++ {
+		log.Printf("SUIT: %v VALUE: %v", d.DeckOfCards[i].Suit, d.DeckOfCards[i].Value)
 	}
 }
 
 func (d Deck) GetLength() int {
-	return len(d.deck)
+	return len(d.DeckOfCards)
 }

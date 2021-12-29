@@ -17,8 +17,3 @@ type JsonDeck struct {
 	CreatedDate      string `json:"createdDate"`
 	LastModifiedDate string `json:"lastModifiedDate"`
 }
-
-type Cards struct {
-	DeckId      string `json:"deckId"`
-	DeckOfCards string `json:"deckOfCards"`
-}
