@@ -15,6 +15,7 @@ type PostDB interface {
 	Close() error
 	CreateDeck(deck *models.Deck) (int64, error)
 	CreateCards(cards *models.Doc) error
+	GetByDeckId(deckId string)
 }
 
 type DB struct {
@@ -68,4 +69,12 @@ func (d *DB) CreateCards(cards *models.Doc) error {
 		log.Fatal("Cards could not be created")
 	}
 	return err
+}
+
+func (d *DB) GetByDeckId(deckId string) {
+	res, err := d.db.Query(getDeckById, deckId)
+	if err != nil {
+		log.Fatal("Could not retrive deck by id")
+	}
+	fmt.Println(res)
 }

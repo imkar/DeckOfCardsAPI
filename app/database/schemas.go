@@ -28,3 +28,7 @@ var insertNewDeck = `
 var insertCards = `
 	INSERT INTO cards (deckId, deckOfCards) VALUES ($1, $2)
 `
+
+var getDeckById = `
+	SELECT deckofcards FROM decks JOIN cards ON (decks.deckId=cards.deckId) WHERE decks.deckid = $1;
+`

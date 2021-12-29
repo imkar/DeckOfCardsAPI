@@ -19,7 +19,7 @@ func (a *App) IndexHandler() http.HandlerFunc {
 // TODO:
 // CreateDeckHandler -> Saves/Returns Empty DeckOfCards :DONE
 // Refactor	:DONE
-// Tests
+// Tests :DONE
 // if deckId exists, checks it (DeckID must be UNIQUE).
 
 // Route: "/api/createDeck"
@@ -66,4 +66,38 @@ func (a *App) CreateDeckHandler() http.HandlerFunc {
 		resp := mapDeckToJSON(d)
 		sendResponse(w, r, resp, http.StatusOK)
 	}
+}
+
+func (a *App) DrawCardByIdHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO:
+
+		// CALL getDeckByIdHandler()
+
+		// GET FIRST CARD! AND REMOVE FIRST CARD FROM DB.
+
+		// UPDATE DECK STATE ON DB.
+
+		// RETURN THE DRAWN CARD.
+	}
+}
+
+// This should be helper or someting different...
+
+func getDeckByIdHandler() {
+	// TODO: (this is an internal function),
+	//		(can be written as interface),
+	//		(check carefully the input, this function is an internal executor.)
+
+	// get deckid from params.
+
+	// check whether these deckid exists in the db.
+
+	// get deck from db by id.
+	//// a.DB.GetByDeckId(params["deckid"])
+
+	// unmarshall json to struct.
+
+	// print deck
+
 }
