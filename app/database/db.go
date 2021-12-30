@@ -1,12 +1,14 @@
 package database
 
 import (
+	"deckofcards/app/deck"
 	"deckofcards/app/models"
 	"encoding/json"
 	"fmt"
 	"log"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/jmoiron/sqlx/types"
 	_ "github.com/lib/pq"
 )
 
@@ -15,7 +17,9 @@ type PostDB interface {
 	Close() error
 	CreateDeck(deck *models.Deck) (int64, error)
 	CreateCards(cards *models.Doc) error
-	GetByDeckId(deckId string)
+	GetCardsByDeckId(deckId string) deck.Cards
+	//GetDeckByDeckId(deckid string)
+	DecrementRemainingCountOnDeckById(deckid string) error
 }
 
 type DB struct {
@@ -71,10 +75,38 @@ func (d *DB) CreateCards(cards *models.Doc) error {
 	return err
 }
 
-func (d *DB) GetByDeckId(deckId string) {
-	res, err := d.db.Query(getDeckById, deckId)
-	if err != nil {
-		log.Fatal("Could not retrive deck by id")
+func (d *DB) GetCardsByDeckId(deckId string) deck.Cards {
+
+	var lang types.JSONText
+	row := d.db.QueryRow(getCardsById, deckId)
+	if err := row.Scan(&lang); err != nil {
+		log.Fatalf("Row could not be selected: %v", err)
 	}
-	fmt.Println(res)
+
+	var v deck.Cards
+	if err := json.Unmarshal(lang, &v); err != nil {
+		log.Fatalf("Error on unmarshalling: %v", err)
+	}
+
+	return v
 }
+
+func (d *DB) DecrementRemainingCountOnDeckById(deckid string) error {
+	_, err := d.db.Exec(decrementRemainingById, deckid)
+	return err
+}
+
+/*
+func (d *DB) GetDeckByDeckId(deckid string) models.Deck {
+
+	var lang models.Deck
+	row := d.db.QueryRow(getDeckById, deckid)
+
+	if err := row.Scan(&lang.ID, &lang.DeckId, &lang.Shuffled,
+		&lang.Remaining, &lang.CreatedDate, &lang.LastModifiedDate); err != nil {
+		log.Fatalf("Row could not be selected: \n%v\n", err)
+	}
+	return lang
+	//fmt.Printf("Deck Returned from db: \n%v\n", lang)
+}
+*/

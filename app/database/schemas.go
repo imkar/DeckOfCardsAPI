@@ -29,6 +29,14 @@ var insertCards = `
 	INSERT INTO cards (deckId, deckOfCards) VALUES ($1, $2)
 `
 
-var getDeckById = `
+var getCardsById = `
 	SELECT deckofcards FROM decks JOIN cards ON (decks.deckId=cards.deckId) WHERE decks.deckid = $1;
+`
+
+var getDeckById = `
+	SELECT * FROM decks WHERE deckid = $1;
+`
+
+var decrementRemainingById = `
+	UPDATE decks SET remaining = remaining - 1 WHERE deckid = $1;
 `
