@@ -44,3 +44,11 @@ var decrementRemainingById = `
 var updateCardsById = `
 	UPDATE cards SET deckofcards = $1 WHERE deckid = $2;
 `
+
+var deleteCardsById = `
+	DELETE FROM cards WHERE deckid = $1;
+`
+
+var deleteDeckById = `
+	DELETE FROM decks WHERE deckid = $1;
+`

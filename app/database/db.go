@@ -21,6 +21,8 @@ type PostDB interface {
 	GetDeckByDeckId(deckid string) models.Deck
 	DecrementRemainingCountOnDeckById(deckid string) error
 	UpdateCardsByDeckId(dOfC deck.Cards, deckid string) error
+	DeleteCardsByDeckId(deckid string) error
+	DeleteDeckByDeckId(deckid string) error
 }
 
 type DB struct {
@@ -116,5 +118,14 @@ func (d *DB) GetDeckByDeckId(deckid string) models.Deck {
 		log.Fatalf("Row could not be selected: \n%v\n", err)
 	}
 	return lang
-	//fmt.Printf("Deck Returned from db: \n%v\n", lang)
+}
+
+func (d *DB) DeleteCardsByDeckId(deckid string) error {
+	_, err := d.db.Exec(deleteCardsById, deckid)
+	return err
+}
+
+func (d *DB) DeleteDeckByDeckId(deckid string) error {
+	_, err := d.db.Exec(deleteDeckById, deckid)
+	return err
 }

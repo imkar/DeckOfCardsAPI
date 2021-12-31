@@ -86,7 +86,7 @@ func (a *App) DrawCardByIdHandler() http.HandlerFunc {
 		// Get Params.
 		vars := mux.Vars(r)
 		deckid := vars["deckid"]
-		//fmt.Printf("Deck returned: %v\n", decksObj)
+
 		// CALL getCardsByIdHandler
 		cardsObj := a.getCardsByIdHandler(deckid)
 
@@ -100,7 +100,7 @@ func (a *App) DrawCardByIdHandler() http.HandlerFunc {
 			drawnCard, restOfCards = draw(cardsObj)
 
 			// CALL decrementRemainingByDeckIdHandler()
-			err := a.decrementRemainingByDeckIdHandler(vars["deckid"])
+			err := a.decrementRemainingByDeckIdHandler(deckid)
 			if err != nil {
 				log.Fatalf("Cannot decrement the count of cards.")
 			}
@@ -155,14 +155,33 @@ func (a *App) DrawCardByIdHandler() http.HandlerFunc {
 			jsonDraw := mapDrawCardToJSON(&jsonDeck, &jsonCard)
 			sendResponse(w, r, jsonDraw, http.StatusOK)
 
+			// CLEAN deckId from DB cards and decks.
+			//DeleteCardsByDeckId(deckid)
+			errrr := a.DeleteCardsByDeckId(deckid)
+			if errrr != nil {
+				log.Fatalf("Cards cannot be deleted from db: %v", errrr)
+			}
+			//DeleteDeckByDeckId(deckid)
+			errrrr := a.DeleteDeckByDeckId(deckid)
+			if errrrr != nil {
+				log.Fatalf("Decks cannot be deleted from db: %v", errrrr)
+			}
+
 		} else {
 			log.Println("No cards left in the deck.")
-
-			// CLEAN deckId from DB cards and decks.
-
 			sendResponse(w, r, nil, http.StatusInternalServerError)
 		}
 	}
+}
+
+func (a *App) DeleteCardsByDeckId(deckid string) error {
+	err := a.DB.DeleteCardsByDeckId(deckid)
+	return err
+}
+
+func (a *App) DeleteDeckByDeckId(deckid string) error {
+	err := a.DB.DeleteDeckByDeckId(deckid)
+	return err
 }
 
 // This should be helper or someting different...
