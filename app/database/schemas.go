@@ -40,3 +40,7 @@ var getDeckById = `
 var decrementRemainingById = `
 	UPDATE decks SET remaining = remaining - 1 WHERE deckid = $1;
 `
+
+var updateCardsById = `
+	UPDATE cards SET deckofcards = $1 WHERE deckid = $2;
+`

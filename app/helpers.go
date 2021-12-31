@@ -1,6 +1,7 @@
 package app
 
 import (
+	"deckofcards/app/deck"
 	"deckofcards/app/models"
 	"encoding/json"
 	"fmt"
@@ -39,5 +40,19 @@ func mapDeckToJSON(d *models.Deck) models.JsonDeck {
 		Remaining:        d.Remaining,
 		CreatedDate:      d.CreatedDate,
 		LastModifiedDate: d.LastModifiedDate,
+	}
+}
+
+func mapCardToJSON(c *deck.Card) models.JsonCard {
+	return models.JsonCard{
+		Suit:  c.Suit,
+		Value: c.Value,
+	}
+}
+
+func mapDrawCardToJSON(jd *models.JsonDeck, jc *models.JsonCard) models.JsonDraw {
+	return models.JsonDraw{
+		DeckJson: *jd,
+		CardJson: *jc,
 	}
 }

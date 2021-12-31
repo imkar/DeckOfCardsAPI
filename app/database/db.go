@@ -18,8 +18,9 @@ type PostDB interface {
 	CreateDeck(deck *models.Deck) (int64, error)
 	CreateCards(cards *models.Doc) error
 	GetCardsByDeckId(deckId string) deck.Cards
-	//GetDeckByDeckId(deckid string)
+	GetDeckByDeckId(deckid string) models.Deck
 	DecrementRemainingCountOnDeckById(deckid string) error
+	UpdateCardsByDeckId(dOfC deck.Cards, deckid string) error
 }
 
 type DB struct {
@@ -96,7 +97,15 @@ func (d *DB) DecrementRemainingCountOnDeckById(deckid string) error {
 	return err
 }
 
-/*
+func (d *DB) UpdateCardsByDeckId(dOfC deck.Cards, deckid string) error {
+	j, errr := json.Marshal(dOfC)
+	if errr != nil {
+		fmt.Printf("Error: %s", errr.Error())
+	}
+	_, err := d.db.Exec(updateCardsById, j, deckid)
+	return err
+}
+
 func (d *DB) GetDeckByDeckId(deckid string) models.Deck {
 
 	var lang models.Deck
@@ -109,4 +118,3 @@ func (d *DB) GetDeckByDeckId(deckid string) models.Deck {
 	return lang
 	//fmt.Printf("Deck Returned from db: \n%v\n", lang)
 }
-*/

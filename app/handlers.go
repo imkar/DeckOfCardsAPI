@@ -70,34 +70,98 @@ func (a *App) CreateDeckHandler() http.HandlerFunc {
 	}
 }
 
+func draw(cardsObj deck.Cards) (deck.Card, deck.Cards) {
+	return cardsObj[0], cardsObj[1:]
+}
+
+// TODO:
+// - NEEDS REFACTOR -> This function must be well designed.
+//	|-> Check for aggregator pattern.
+//  |-> Encapsulation
+// - NEEDS TESTING
+// - GO ROUTINE MAYBE ?
+
 func (a *App) DrawCardByIdHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get Params.
 		vars := mux.Vars(r)
-
+		deckid := vars["deckid"]
 		//fmt.Printf("Deck returned: %v\n", decksObj)
 		// CALL getCardsByIdHandler
-		cardsObj := a.getCardsByIdHandler(vars["deckid"])
+		cardsObj := a.getCardsByIdHandler(deckid)
 
 		// GET FIRST CARD! AND REMOVE FIRST CARD FROM DB.
 		var drawnCard deck.Card
-		if len(cardsObj) > 0 {
-			drawnCard = cardsObj[0]
+		var restOfCards deck.Cards
+
+		if len(cardsObj) > 1 {
+
+			// Draw a card.
+			drawnCard, restOfCards = draw(cardsObj)
+
 			// CALL decrementRemainingByDeckIdHandler()
 			err := a.decrementRemainingByDeckIdHandler(vars["deckid"])
 			if err != nil {
 				log.Fatalf("Cannot decrement the count of cards.")
 			}
 
-			// CALL UPDATE WITH REST
+			// CALL UPDATE the REST
+			errr := a.updateCardsByDeckId(restOfCards, deckid)
+			if errr != nil {
+				log.Fatalf("Could not update the rest of the cards by id.")
+			}
+
+			d := a.getDeckByIdHandler(deckid)
+			dm := &models.Deck{
+				ID:               d.ID,
+				DeckId:           d.DeckId,
+				Shuffled:         d.Shuffled,
+				Remaining:        d.Remaining,
+				CreatedDate:      d.CreatedDate,
+				LastModifiedDate: d.LastModifiedDate,
+			}
+			jsonDeck := mapDeckToJSON(dm)
+			jsonCard := mapCardToJSON(&drawnCard)
+			jsonDraw := mapDrawCardToJSON(&jsonDeck, &jsonCard)
+			sendResponse(w, r, jsonDraw, http.StatusOK)
+
+		} else if len(cardsObj) == 1 {
+
+			drawnCard := cardsObj[0]
+
+			// CALL decrementRemainingByDeckIdHandler()
+			err := a.decrementRemainingByDeckIdHandler(vars["deckid"])
+			if err != nil {
+				log.Fatalf("Cannot decrement the count of cards.")
+			}
+
+			// CALL UPDATE the REST
+			errr := a.updateCardsByDeckId(restOfCards, deckid)
+			if errr != nil {
+				log.Fatalf("Could not update the rest of the cards by id.")
+			}
+
+			d := a.getDeckByIdHandler(deckid)
+			dm := &models.Deck{
+				ID:               d.ID,
+				DeckId:           d.DeckId,
+				Shuffled:         d.Shuffled,
+				Remaining:        d.Remaining,
+				CreatedDate:      d.CreatedDate,
+				LastModifiedDate: d.LastModifiedDate,
+			}
+			jsonDeck := mapDeckToJSON(dm)
+			jsonCard := mapCardToJSON(&drawnCard)
+			jsonDraw := mapDrawCardToJSON(&jsonDeck, &jsonCard)
+			sendResponse(w, r, jsonDraw, http.StatusOK)
+
 		} else {
 			log.Println("No cards left in the deck.")
+
+			// CLEAN deckId from DB cards and decks.
+
 			sendResponse(w, r, nil, http.StatusInternalServerError)
 		}
-		fmt.Printf("Drawn Cards is %v of %v", drawnCard.Value, drawnCard.Suit)
-		// UPDATE DECK STATE ON DB.
-
-		// RETURN THE DRAWN CARD.
 	}
 }
 
@@ -113,14 +177,20 @@ func (a *App) getCardsByIdHandler(deckid string) deck.Cards {
 func (a *App) decrementRemainingByDeckIdHandler(deckid string) error {
 	err := a.DB.DecrementRemainingCountOnDeckById(deckid)
 	if err != nil {
-		log.Fatalf("Could not decrement the Remaining")
+		log.Fatalf("Could not decrement the Remaining, err: %v", err)
 	}
 	return err
 }
 
-/*
-func (a *App) getDeckByIdHandler(deckid string) {
-	a.DB.GetDeckByDeckId(deckid)
-	//return decksObj
+func (a *App) updateCardsByDeckId(dOfC deck.Cards, deckid string) error {
+	err := a.DB.UpdateCardsByDeckId(dOfC, deckid)
+	if err != nil {
+		log.Fatalf("Could not update the rest of the deck after card drawn. %v", err)
+	}
+	return err
 }
-*/
+
+func (a *App) getDeckByIdHandler(deckid string) models.Deck {
+	decksObj := a.DB.GetDeckByDeckId(deckid)
+	return decksObj
+}
