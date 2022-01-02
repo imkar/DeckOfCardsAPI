@@ -23,4 +23,5 @@ func (a *App) initRoutes() {
 	a.Router.HandleFunc("/", a.IndexHandler()).Methods("GET")
 	a.Router.HandleFunc("/api/createDeck", a.CreateDeckHandler()).Methods("POST")
 	a.Router.HandleFunc("/api/draw/{deckid}", a.DrawCardByIdHandler()).Methods("GET")
+	a.Router.HandleFunc("/api/shuffle/{deckid}", a.ShuffleDeckByIdHandler()).Methods("POST")
 }

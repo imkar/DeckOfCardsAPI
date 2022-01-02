@@ -5,6 +5,7 @@ import (
 	"deckofcards/app/models"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -130,7 +131,7 @@ func (a *App) DrawCardByIdHandler() http.HandlerFunc {
 			drawnCard := cardsObj[0]
 
 			// CALL decrementRemainingByDeckIdHandler()
-			err := a.decrementRemainingByDeckIdHandler(vars["deckid"])
+			err := a.decrementRemainingByDeckIdHandler(deckid)
 			if err != nil {
 				log.Fatalf("Cannot decrement the count of cards.")
 			}
@@ -212,4 +213,28 @@ func (a *App) updateCardsByDeckId(dOfC deck.Cards, deckid string) error {
 func (a *App) getDeckByIdHandler(deckid string) models.Deck {
 	decksObj := a.DB.GetDeckByDeckId(deckid)
 	return decksObj
+}
+
+func shuffle(cardsObj deck.Cards) deck.Cards {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(cardsObj), func(i, j int) { cardsObj[i], cardsObj[j] = cardsObj[j], cardsObj[i] })
+	return cardsObj
+}
+
+func (a *App) ShuffleDeckByIdHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+		deckid := params["deckid"]
+		// Get cards from DB by deckId.
+		cardsObj := a.getCardsByIdHandler(deckid)
+		// Shuffle cards
+		cardsObj = shuffle(cardsObj)
+		// Update DB with shuffled cards.
+		err := a.updateCardsByDeckId(cardsObj, deckid)
+		if err != nil {
+			log.Fatalf("Could not update the rest of the deck after card drawn. %v", err)
+			sendResponse(w, r, nil, http.StatusInternalServerError)
+		}
+		sendResponse(w, r, &models.Status{DeckId: deckid, Status: 200}, http.StatusOK)
+	}
 }
