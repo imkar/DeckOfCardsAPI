@@ -67,13 +67,14 @@ func (d *DB) CreateDeck(deck *models.Deck) (int64, error) {
 
 // Inserts Cards with deckId as primary key.
 func (d *DB) CreateCards(cards *models.Doc) error {
-	j, errr := json.Marshal(cards.DeckOfCards)
-	if errr != nil {
-		fmt.Printf("Error: %s", errr.Error())
-	}
-	_, err := d.db.Exec(insertCards, cards.DeckId, j)
+	j, err := json.Marshal(cards.DeckOfCards)
 	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		return err
+	}
+	if _, err := d.db.Exec(insertCards, cards.DeckId, j); err != nil {
 		log.Fatal("Cards could not be created")
+		return err
 	}
 	return err
 }
