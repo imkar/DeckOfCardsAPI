@@ -61,9 +61,8 @@ func (a *App) CreateDeckHandler() http.HandlerFunc {
 			DeckOfCards: deckOfCards.GetDeck(),
 		}
 
-		er := a.DB.CreateCards(cards)
-		if er != nil {
-			log.Fatal("Cards could not be created")
+		if err := a.DB.CreateCards(cards); err != nil {
+			log.Fatalf("Cards could not be created. Err: %v", err)
 		}
 
 		resp := mapDeckToJSON(d)
@@ -101,15 +100,13 @@ func (a *App) DrawCardByIdHandler() http.HandlerFunc {
 			drawnCard, restOfCards = draw(cardsObj)
 
 			// CALL decrementRemainingByDeckIdHandler()
-			err := a.decrementRemainingByDeckIdHandler(deckid)
-			if err != nil {
-				log.Fatalf("Cannot decrement the count of cards.")
+			if err := a.decrementRemainingByDeckIdHandler(deckid); err != nil {
+				log.Fatalf("Cannot decrement the count of cards. Err: %v", err)
 			}
 
 			// CALL UPDATE the REST
-			errr := a.updateCardsByDeckId(restOfCards, deckid)
-			if errr != nil {
-				log.Fatalf("Could not update the rest of the cards by id.")
+			if err := a.updateCardsByDeckId(restOfCards, deckid); err != nil {
+				log.Fatalf("Could not update the rest of the cards by id. Err: %v", err)
 			}
 
 			d := a.getDeckByIdHandler(deckid)
@@ -131,15 +128,13 @@ func (a *App) DrawCardByIdHandler() http.HandlerFunc {
 			drawnCard := cardsObj[0]
 
 			// CALL decrementRemainingByDeckIdHandler()
-			err := a.decrementRemainingByDeckIdHandler(deckid)
-			if err != nil {
-				log.Fatalf("Cannot decrement the count of cards.")
+			if err := a.decrementRemainingByDeckIdHandler(deckid); err != nil {
+				log.Fatalf("Cannot decrement the count of cards. Err: %v", err)
 			}
 
 			// CALL UPDATE the REST
-			errr := a.updateCardsByDeckId(restOfCards, deckid)
-			if errr != nil {
-				log.Fatalf("Could not update the rest of the cards by id.")
+			if err := a.updateCardsByDeckId(restOfCards, deckid); err != nil {
+				log.Fatalf("Could not update the rest of the cards by id. Err: %v", err)
 			}
 
 			d := a.getDeckByIdHandler(deckid)
@@ -158,14 +153,12 @@ func (a *App) DrawCardByIdHandler() http.HandlerFunc {
 
 			// CLEAN deckId from DB cards and decks.
 			//DeleteCardsByDeckId(deckid)
-			errrr := a.DeleteCardsByDeckId(deckid)
-			if errrr != nil {
-				log.Fatalf("Cards cannot be deleted from db: %v", errrr)
+			if err := a.DeleteCardsByDeckId(deckid); err != nil {
+				log.Fatalf("Cards cannot be deleted from db: %v", err)
 			}
 			//DeleteDeckByDeckId(deckid)
-			errrrr := a.DeleteDeckByDeckId(deckid)
-			if errrrr != nil {
-				log.Fatalf("Decks cannot be deleted from db: %v", errrrr)
+			if err := a.DeleteDeckByDeckId(deckid); err != nil {
+				log.Fatalf("Decks cannot be deleted from db: %v", err)
 			}
 
 		} else {

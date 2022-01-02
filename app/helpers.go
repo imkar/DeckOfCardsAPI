@@ -24,9 +24,7 @@ func sendResponse(w http.ResponseWriter, _ *http.Request, data interface{}, stat
 		return
 	}
 
-	err := json.NewEncoder(w).Encode(data)
-
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(data); err != nil {
 		log.Printf("Cannot format JSON. err=%v\n", err)
 	}
 }
